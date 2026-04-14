@@ -1,0 +1,125 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}Crear Cuenta - Restaurante Universitario{% endblock %}
+
+{% block auth_content %}
+
+<div class="auth-icon-circle">
+    <i class="bi bi-person-plus-fill"></i>
+</div>
+
+<h2 class="auth-title">Crear Cuenta</h2>
+<p class="auth-subtitle">Ingresa tus datos para registrarte como estudiante.</p>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger py-1 px-3 small mb-3" style="font-size: 0.75rem;">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row g-2">
+        <div class="col-6">
+            <label for="{{ form.first_name.id_for_label }}" class="form-label">Nombre</label>
+            <div class="input-group-auth">
+                <input type="text" name="first_name" class="form-control" placeholder="Nombre" required id="id_first_name">
+                <i class="bi bi-person"></i>
+                {% if form.first_name.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.first_name.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        <div class="col-6">
+            <label for="{{ form.last_name.id_for_label }}" class="form-label">Apellido</label>
+            <div class="input-group-auth">
+                <input type="text" name="last_name" class="form-control" placeholder="Apellido" required id="id_last_name">
+                <i class="bi bi-person"></i>
+                {% if form.last_name.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.last_name.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2">
+        <div class="col-7">
+            <label for="{{ form.cedula.id_for_label }}" class="form-label">Cédula / ID</label>
+            <div class="input-group-auth">
+                <input type="text" name="cedula" class="form-control" placeholder="Identificación" required id="id_cedula">
+                <i class="bi bi-card-heading"></i>
+                {% if form.cedula.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.cedula.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        <div class="col-5">
+            <label for="{{ form.username.id_for_label }}" class="form-label">Usuario</label>
+            <div class="input-group-auth">
+                <input type="text" name="username" class="form-control" placeholder="Usuario" required id="id_username">
+                <i class="bi bi-person-badge"></i>
+                {% if form.username.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-1">
+        <label for="{{ form.email.id_for_label }}" class="form-label">Correo Electrónico</label>
+        <div class="input-group-auth">
+            <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com" required id="id_email">
+            <i class="bi bi-envelope"></i>
+            {% if form.email.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+    </div>
+
+    <div class="row g-2">
+        <div class="col-6">
+            <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña</label>
+            <div class="input-group-auth">
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required id="id_password">
+                <i class="bi bi-lock"></i>
+                {% if form.password.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.password.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        <div class="col-6">
+            <label for="{{ form.password_confirm.id_for_label }}" class="form-label">Confirmar</label>
+            <div class="input-group-auth">
+                <input type="password" name="password_confirm" class="form-control" placeholder="••••••••" required id="id_password_confirm">
+                <i class="bi bi-lock-check"></i>
+                {% if form.password_confirm.errors %}<div class="text-danger x-small mt-n3 mb-2">{{ form.password_confirm.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-1">
+        <label for="{{ form.career.id_for_label }}" class="form-label">Carrera (Opcional)</label>
+        <div class="input-group-auth">
+            <input type="text" name="career" class="form-control" placeholder="Tu carrera" id="id_career">
+            <i class="bi bi-mortarboard"></i>
+        </div>
+    </div>
+
+    <div class="row g-2">
+        <div class="col-5">
+            <label for="{{ form.semester.id_for_label }}" class="form-label">Semestre</label>
+            <div class="input-group-auth">
+                <input type="number" name="semester" class="form-control" placeholder="0" id="id_semester">
+                <i class="bi bi-123"></i>
+            </div>
+        </div>
+        <div class="col-7">
+            <label for="{{ form.phone.id_for_label }}" class="form-label">Teléfono</label>
+            <div class="input-group-auth">
+                <input type="text" name="phone" class="form-control" placeholder="Opcional" id="id_phone">
+                <i class="bi bi-phone"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid mt-2">
+        <button type="submit" class="btn btn-danger btn-auth w-100">
+            Crear Cuenta
+        </button>
+    </div>
+</form>
+
+<div class="auth-footer">
+    <p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Iniciar sesión</a></p>
+</div>
+{% endblock %}

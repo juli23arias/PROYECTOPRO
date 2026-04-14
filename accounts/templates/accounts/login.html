@@ -1,0 +1,53 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}Iniciar Sesión - Restaurante Universitario{% endblock %}
+
+{% block auth_content %}
+<div class="auth-icon-circle">
+    <i class="bi bi-shield-lock"></i>
+</div>
+
+<h2 class="auth-title">Iniciar Sesión</h2>
+<p class="auth-subtitle">Ingresa tus credenciales para acceder al sistema.</p>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {% if form.errors %}
+    <div class="alert alert-danger py-2 small mb-4">
+        <i class="bi bi-exclamation-circle-fill me-2"></i> Usuario o contraseña incorrectos.
+    </div>
+    {% endif %}
+
+    <div class="mb-1">
+        <label for="id_username" class="form-label">Usuario o Cédula</label>
+        <div class="input-group-auth">
+            <input type="text" name="username" autofocus class="form-control" placeholder="Ej: 12345678" required id="id_username">
+            <i class="bi bi-person"></i>
+        </div>
+    </div>
+
+    <div class="mb-1">
+        <label for="id_password" class="form-label">Contraseña</label>
+        <div class="input-group-auth">
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required id="id_password">
+            <i class="bi bi-lock"></i>
+        </div>
+    </div>
+
+    <div class="d-grid">
+        <button type="submit" class="btn btn-danger btn-auth w-100">
+            Iniciar Sesión
+        </button>
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'password_reset' %}" class="small text-muted text-decoration-none">¿Olvidaste tu contraseña?</a>
+    </div>
+</form>
+
+<div class="auth-footer">
+    <p>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+</div>
+{% endblock %}

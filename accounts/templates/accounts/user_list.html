@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Gestión de Usuarios - K-Univ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-people text-danger me-2"></i> Gestión de Usuarios</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'user_create' %}" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold">
+            <i class="bi bi-person-plus me-1"></i> Nuevo Usuario
+        </a>
+    </div>
+</div>
+
+<div class="apple-card fade-in">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Registro</th>
+                    <th class="text-end pe-4">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center">
+                            <div class="apple-icon-container me-3 mb-0" style="width: 40px; height: 40px; border-radius: 10px;">
+                                <i class="bi bi-person fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">{{ user.get_full_name|default:user.username }}</div>
+                                <div class="text-muted small">Cédula: <span class="fw-bold text-dark">{{ user.cedula|default:"N/A" }}</span> | @{{ user.username }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_admin_role %}
+                            <span class="badge bg-danger rounded-pill px-3">Admin</span>
+                        {% elif user.is_chef %}
+                            <span class="badge bg-warning text-dark rounded-pill px-3">Chef</span>
+                        {% elif user.is_receptionist %}
+                            <span class="badge bg-success rounded-pill px-3">Recepción</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark border rounded-pill px-3">Estudiante</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small">{{ user.date_joined|date:"d/m/Y" }}</td>
+                    <td class="text-end pe-4">
+                        <a href="{% url 'user_update' user.pk %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                            <i class="bi bi-pencil-square me-1"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

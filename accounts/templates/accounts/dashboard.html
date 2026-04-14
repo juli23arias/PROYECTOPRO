@@ -1,0 +1,128 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Resto K-Univ{% endblock %}
+
+{% block content %}
+<!-- Hero Section (Solo mostrado en views como el Index o al inicio) -->
+<div class="hero-landing text-center fade-in rounded-bottom-4 shadow-sm mb-5" style="min-height: auto; padding: 4rem 0;">
+    <div class="container hero-landing-content">
+        <i class="bi bi-shop display-1 mb-3"></i>
+        <h1 class="hero-title">Resto K-Univ</h1>
+        <p class="hero-subtitle mx-auto" style="max-width: 800px;">Sabor y calidad todos los días en tu campus. Descubre nuestro menú, administra tus planes y registra tus comidas desde un mismo lugar.</p>
+        
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="{% url 'menu_view' %}" class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm fw-bold">
+                <i class="bi bi-journal-richtext me-2"></i> Menú Semanal
+            </a>
+            {% if user.is_student %}
+            <a href="{% url 'my_plan' %}" class="btn btn-light text-danger btn-lg rounded-pill px-4 shadow fw-bold">
+                <i class="bi bi-card-checklist me-2"></i> Mi Plan Activo
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row fade-in">
+    <!-- Panel del Usuario Estudiante -->
+    {% if user.is_student %}
+    <div class="col-md-4 mb-4 mt-3">
+        <div class="apple-card h-100 text-center">
+            <div class="apple-icon-container mx-auto">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <h5 class="fw-bold font-heading text-uppercase mb-2">Menú Semanal</h5>
+            <p class="text-muted small mb-4">Conoce los platillos que tenemos preparados para ti en la semana.</p>
+            <a href="{% url 'menu_view' %}" class="btn btn-dark rounded-pill w-100 fw-bold py-2">Consultar Menú</a>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 mt-3">
+        <div class="apple-card h-100 text-center">
+            <div class="apple-icon-container mx-auto">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+            <h5 class="fw-bold font-heading text-uppercase mb-2">Mis Asistencias</h5>
+            <p class="text-muted small mb-4">Revisa tu historial de entradas al comedor universitario.</p>
+            <a href="{% url 'attendance_history' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-2">Ver Historial</a>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4 mt-3">
+        <div class="apple-card h-100 text-center">
+            <div class="apple-icon-container mx-auto">
+                <i class="bi bi-credit-card"></i>
+            </div>
+            <h5 class="fw-bold font-heading text-uppercase mb-2">Mi Plan de Comidas</h5>
+            <p class="text-muted small mb-4">Consulta tu membresía, vigencia y comidas disponibles.</p>
+            <a href="{% url 'my_plan' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-2">Mi Plan</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Panel del Chef -->
+    {% if user.is_chef %}
+    <div class="col-md-6 mb-4 mt-3">
+        <div class="apple-card h-100 d-flex align-items-center">
+            <div class="apple-icon-container me-4 mb-0 flex-shrink-0">
+                <i class="bi bi-journal-text"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold font-heading text-uppercase mb-1">Recetario</h5>
+                <p class="text-muted small mb-3">Administra y crea nuevas recetas para el sistema.</p>
+                <a href="{% url 'recipe_list' %}" class="btn btn-dark btn-sm rounded-pill px-4 fw-bold">Ir a Recetas</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4 mt-3">
+        <div class="apple-card h-100 d-flex align-items-center">
+            <div class="apple-icon-container me-4 mb-0 flex-shrink-0" style="background-color: rgba(255, 193, 7, 0.1);">
+                <i class="bi bi-calendar-week text-warning"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold font-heading text-uppercase mb-1">Menú Semanal</h5>
+                <p class="text-muted small mb-3">Asigna platillos a cada día de la semana y decídelo.</p>
+                <a href="{% url 'menu_weekly' %}" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold">Planear Menú</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Panel de Recepción -->
+    {% if user.is_receptionist %}
+    <div class="col-md-6 mb-4 mt-3">
+        <div class="apple-card h-100 text-center">
+            <div class="apple-icon-container mx-auto" style="background-color: rgba(25, 135, 84, 0.1);">
+                <i class="bi bi-person-check-fill text-success"></i>
+            </div>
+            <h5 class="fw-bold font-heading text-uppercase mb-2">Asistencias</h5>
+            <p class="text-muted small mb-4">Registra la entrada diaria de los estudiantes con plan o pago suelto.</p>
+            <a href="{% url 'attendance_register' %}" class="btn btn-success rounded-pill px-4 fw-bold w-100">
+                <i class="bi bi-check2-circle"></i> Registrar Ingreso
+            </a>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4 mt-3">
+        <div class="apple-card h-100 text-center">
+            <div class="apple-icon-container mx-auto">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <h5 class="fw-bold font-heading text-uppercase mb-2">Caja y Pagos</h5>
+            <p class="text-muted small mb-4">Factura transacciones diarias y pagos de planes individuales.</p>
+            <a href="{% url 'payment_register' %}" class="btn btn-dark rounded-pill px-4 fw-bold w-100">
+                <i class="bi bi-receipt"></i> Cobrar y Facturar
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Panel Admin -->
+    {% if user.is_admin_role %}
+    <div class="col-12 text-center text-muted mt-4">
+        <h5>Para métricas y acciones avanzadas, visita el <a href="{% url 'admin_reports_dashboard' %}" class="text-danger fw-bold text-decoration-none">Dashboard Administrativo</a>.</h5>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

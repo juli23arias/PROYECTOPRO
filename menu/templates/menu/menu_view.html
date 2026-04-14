@@ -1,0 +1,110 @@
+{% extends 'core/base.html' %}
+{% load menu_extras %}
+
+{% block title %}Menú Semanal - Resto K-Univ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-calendar-check text-danger me-2"></i> Menú de la Semana</h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0 d-flex gap-2">
+        <div class="btn-group shadow-sm">
+            <a href="?year={{ prev_year }}&week={{ prev_week }}" class="btn btn-outline-secondary px-3" title="Semana Anterior">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <a href="{% url 'menu_view' %}" class="btn {% if is_today_week %}btn-danger{% else %}btn-outline-danger{% endif %} fw-bold px-4">
+                {{ week_label }}
+            </a>
+            <a href="?year={{ next_year }}&week={{ next_week }}" class="btn btn-outline-secondary px-3" title="Semana Siguiente">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+        
+        <span class="badge bg-white text-dark border fs-6 py-2 px-3 rounded shadow-sm d-flex align-items-center d-none d-md-flex">
+            Semana <span class="text-danger fw-bold ms-1">{{ week }}</span> / {{ year }}
+        </span>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-5 g-4 mb-5 fade-in">
+    {% for day in days %}
+        {% with day_menu=menus|get_item:day.0 %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 hover-shadow transition" style="border-radius: var(--border-radius); overflow: hidden;">
+                <!-- Product Image Header -->
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 160px; position: relative;">
+                    <span class="badge bg-dark position-absolute top-0 start-0 m-3 px-3 py-2 font-heading tracking-wider">{{ day.1 }}</span>
+                    {% if day_menu %}
+                        <i class="bi bi-cup-hot text-danger opacity-50 display-1"></i>
+                    {% else %}
+                        <i class="bi bi-calendar-x text-muted opacity-25 display-1"></i>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body text-center d-flex flex-column justify-content-center p-4">
+                    {% if day_menu %}
+                        <h5 class="fw-bold text-dark mb-2 font-heading tracking-wider">{{ day_menu.recipe.name }}</h5>
+                        <div class="fw-bold fs-5 mb-2" style="color: var(--kfc-red-main) !important;">Menú del Día</div>
+                        <p class="text-muted small mb-4 flex-grow-1">{{ day_menu.recipe.description|truncatechars:80 }}</p>
+                    {% else %}
+                        <h5 class="fw-bold text-muted mb-2 font-heading tracking-wider">No Disponible</h5>
+                        <p class="text-muted fst-italic mb-0 small flex-grow-1">Sin menú asignado para este día.</p>
+                    {% endif %}
+                </div>
+                
+                {% if day_menu %}
+                <div class="card-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-center">
+                    <button class="btn btn-danger w-100 rounded-pill shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#recipeModal{{ day.0 }}">
+                        <i class="bi bi-list-stars me-1"></i> Ver Detalles
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endwith %}
+    {% endfor %}
+</div>
+
+<!-- Modals fuera del loop de tarjetas para evitar conflictos de desbordamiento (overflow:hidden) -->
+{% for day in days %}
+    {% with day_menu=menus|get_item:day.0 %}
+    {% if day_menu %}
+    <div class="modal fade" id="recipeModal{{ day.0 }}" tabindex="-1" aria-labelledby="recipeModalLabel{{ day.0 }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                <div class="modal-header bg-danger text-white" style="border-radius: 12px 12px 0 0;">
+                    <h5 class="modal-title fw-bold" id="recipeModalLabel{{ day.0 }}"><i class="bi bi-cup-hot me-2"></i> {{ day_menu.recipe.name }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h6 class="fw-bold text-danger border-bottom pb-2 mb-3">Descripción</h6>
+                    <p class="text-muted lh-base">{{ day_menu.recipe.description }}</p>
+                    
+                    <h6 class="fw-bold text-danger border-bottom pb-2 mb-3 mt-4">Ingredientes Principales</h6>
+                    <p class="text-muted lh-base" style="white-space: pre-wrap;">{{ day_menu.recipe.ingredients }}</p>
+
+                    {% if day_menu.recipe.preparation %}
+                    <h6 class="fw-bold text-danger border-bottom pb-2 mb-3 mt-4">Preparación</h6>
+                    <p class="text-muted small mb-0">{{ day_menu.recipe.preparation }}</p>
+                    {% endif %}
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+{% endfor %}
+
+{% if not menus %}
+<div class="row fade-in">
+    <div class="col-12 text-center py-5">
+        <div class="display-1 text-muted opacity-25 mb-4"><i class="bi bi-journal-x"></i></div>
+        <h3 class="text-muted">El menú de esta semana aún no está disponible</h3>
+        <p class="lead text-muted">Vuelve pronto para conocer las opciones que el Chef está preparando.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

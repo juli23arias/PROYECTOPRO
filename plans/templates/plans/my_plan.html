@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mi Plan de Alimentación - Resto K-Univ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-card-checklist text-danger me-2"></i> Mi Plan de Alimentación</h1>
+</div>
+
+<div class="row fade-in">
+    <div class="col-md-6 mb-4">
+        <h4 class="mb-3 text-success fw-bold font-heading text-uppercase"><i class="bi bi-star-fill me-2"></i> Plan Activo</h4>
+        {% if active_plan %}
+            <div class="card shadow-lg border-0 h-100" style="border-radius: var(--border-radius); overflow: hidden;">
+                <div class="card-header text-white text-center py-4 bg-danger">
+                    <h3 class="card-title fw-bold mb-0 font-heading tracking-wider"><i class="bi bi-award me-2"></i> {{ active_plan.plan.name }}</h3>
+                </div>
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-dark fw-bold mb-3"><span class="fs-4 text-muted">$</span>{{ active_plan.plan.price|floatformat:0 }}</div>
+                    <p class="text-muted mb-4 fs-5">{{ active_plan.plan.description }}</p>
+                    
+                    <ul class="list-group list-group-flush text-start mb-4 border-top border-bottom">
+                        <li class="list-group-item border-0 py-3"><i class="bi bi-clock-fill text-danger me-3 fs-5"></i> Duración: <strong>{{ active_plan.plan.duration_days }}</strong> días</li>
+                        <li class="list-group-item border-0 py-3"><i class="bi bi-calendar2-check-fill text-success me-3 fs-5"></i> Inicio: <span class="fw-bold">{{ active_plan.start_date|date:"d M Y" }}</span></li>
+                        <li class="list-group-item border-0 py-3"><i class="bi bi-calendar2-x-fill text-danger me-3 fs-5"></i> Vencimiento: <span class="fw-bold">{{ active_plan.end_date|date:"d M Y" }}</span></li>
+                    </ul>
+                    
+                    <div class="alert alert-success m-0 shadow-sm border-0 d-flex align-items-center justify-content-center" role="alert">
+                        <i class="bi bi-check-circle-fill fs-4 me-2"></i> <span>Tu plan está al día. <strong>¡Buen provecho!</strong></span>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card shadow-sm h-100 border-0 border-top border-warning border-4">
+                <div class="card-body text-center p-5 d-flex flex-column justify-content-center">
+                    <i class="bi bi-exclamation-circle text-warning display-1 mb-3"></i>
+                    <h4 class="text-dark fw-bold">No tienes ningún plan activo</h4>
+                    <p class="text-muted mt-2">Acércate a recepción para solicitar la asignación de tu plan de alimentación estudiantil o paga por día en caja.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <h4 class="mb-3 text-secondary fw-bold font-heading text-uppercase"><i class="bi bi-clock-history me-2"></i> Historial de Planes</h4>
+        <div class="card shadow-sm border-0 h-100" style="border-radius: var(--border-radius);">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" style="border-radius: var(--border-radius);">
+                    {% for sp in past_plans %}
+                    <div class="list-group-item p-4 transition hover-shadow">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 fw-bold text-dark font-heading tracking-wider"><i class="bi bi-bookmark-fill text-secondary me-2"></i> {{ sp.plan.name }}</h5>
+                            <span class="badge bg-light text-secondary border rounded-pill font-text">{{ sp.end_date|date:"M Y" }}</span>
+                        </div>
+                        <p class="mb-2 text-muted"><i class="bi bi-calendar-range me-2"></i> Válido del {{ sp.start_date|date:"d/m/Y" }} al {{ sp.end_date|date:"d/m/Y" }}</p>
+                        <small class="text-danger fw-bold"><i class="bi bi-x-circle-fill me-1"></i> Vencido/Inactivo</small>
+                    </div>
+                    {% empty %}
+                    <div class="p-5 text-center text-muted">
+                        <i class="bi bi-journal-x display-4 d-block mb-3 opacity-25"></i>
+                        No hay planes pasados registrados en tu historial.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Recetas - Restaurante Universitario{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-journal-text text-danger me-2"></i> Recetario del Chef</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'recipe_create' %}" class="btn btn-danger rounded-pill shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Nueva Receta
+        </a>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5 fade-in">
+    {% for recipe in recipes %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0 border-top border-danger border-4 hover-shadow transition" style="border-radius: var(--border-radius);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="bg-danger bg-opacity-10 rounded-circle text-danger d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-cup-hot-fill fs-4"></i>
+                    </div>
+                    <span class="badge bg-light text-muted border rounded-pill px-3 py-2 font-text"><i class="bi bi-clock me-1"></i> {{ recipe.created_at|date:"d/m/Y" }}</span>
+                </div>
+                <h4 class="card-title fw-bold font-heading tracking-wider mb-3">{{ recipe.name }}</h4>
+                <div class="d-flex align-items-center text-muted small mb-4">
+                    <i class="bi bi-person-fill me-2"></i> Chef: {{ recipe.created_by.get_full_name|default:recipe.created_by.username }}
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-between">
+                <a href="{% url 'recipe_update' recipe.pk %}" class="btn btn-outline-danger rounded-pill btn-sm px-3 flex-grow-1 me-2" title="Editar">
+                    <i class="bi bi-pencil me-1"></i> Editar
+                </a>
+                <a href="{% url 'recipe_delete' recipe.pk %}" class="btn btn-outline-danger rounded-pill btn-sm px-3 flex-grow-1" title="Eliminar">
+                    <i class="bi bi-trash me-1"></i> Borrar
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="display-1 text-muted opacity-25 mb-3"><i class="bi bi-journal-x"></i></div>
+        <h3 class="fw-bold font-heading text-uppercase text-muted">No hay recetas</h3>
+        <p class="text-muted">Aún no se han registrado recetas en el sistema.</p>
+        <a href="{% url 'recipe_create' %}" class="btn btn-danger rounded-pill mt-3"><i class="bi bi-plus-circle me-1"></i> Crear Primera Receta</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

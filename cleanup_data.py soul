@@ -1,0 +1,20 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'restaurante_project.settings')
+django.setup()
+
+from payments.models import Payment
+from plans.models import StudentPlan
+
+print("Iniciando limpieza de datos...")
+
+payments_count = Payment.objects.all().count()
+Payment.objects.all().delete()
+print(f"Eliminados {payments_count} registros de Pagos.")
+
+plans_count = StudentPlan.objects.all().count()
+StudentPlan.objects.all().delete()
+print(f"Eliminados {plans_count} registros de Planes de Estudiantes.")
+
+print("Limpieza completada con éxito. soul.")

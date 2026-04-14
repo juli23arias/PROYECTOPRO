@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ title }} - K-Univ{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4 fade-in">
+    <div class="col-md-8">
+        <div class="apple-card">
+            <h2 class="fw-bold font-heading text-uppercase mb-4 border-bottom pb-3">
+                <i class="bi bi-person-gear text-danger me-2"></i> {{ title }}
+            </h2>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    <!-- Campos comunes -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Cédula / Código</label>
+                        <input type="text" name="cedula" class="form-control" value="{{ user_obj.cedula|default:'' }}" required>
+                        {% if form.cedula.errors %}<div class="text-danger small">{{ form.cedula.errors.0 }}</div>{% endif %}
+                    </div>
+                    
+                    {% if not user_obj %}
+                    <!-- Campos solo para creación -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Usuario / Matrícula</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Contraseña</label>
+                        {{ form.password }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Nombres</label>
+                        <input type="text" name="first_name" class="form-control" value="{{ user_obj.first_name|default:'' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Apellidos</label>
+                        <input type="text" name="last_name" class="form-control" value="{{ user_obj.last_name|default:'' }}">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ user_obj.email|default:'' }}">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Rol de Usuario</label>
+                        <select name="role" class="form-select" required>
+                            {% for val, display in roles %}
+                            <option value="{{ val }}" {% if user_obj.role == val %}selected{% endif %}>{{ display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between gap-3 mt-5">
+                    <a href="{% url 'user_list' %}" class="btn btn-light rounded-pill px-4 fw-bold">Cancelar</a>
+                    <button type="submit" class="btn btn-danger rounded-pill px-5 shadow fw-bold">
+                        <i class="bi bi-save me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

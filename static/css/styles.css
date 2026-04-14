@@ -1,0 +1,440 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --kfc-red: #C8102E;
+    --kfc-dark-red: #A30820;
+    --kfc-light-bg: #F5F5F5;
+    --kfc-dark-text: #333333;
+    --kfc-white: #FFFFFF;
+    
+    /* Brand Colors Sync */
+    --bs-primary: #C8102E;
+    --bs-danger: #C8102E;
+    
+    /* Typography */
+    --font-heading: 'Oswald', sans-serif;
+    --font-text: 'Poppins', sans-serif;
+    
+    /* Spacings & Borders */
+    --border-radius-apple: 20px;
+    --shadow-apple: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+/* Base */
+body {
+    background-color: var(--kfc-light-bg);
+    color: var(--kfc-dark-text);
+    font-family: var(--font-text);
+    padding-top: 76px; /* Offset for fixed navbar */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+}
+
+/* NAVBAR */
+
+.navbar-kfc {
+    background: white !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    min-height: 76px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+}
+
+.navbar-kfc .navbar-brand {
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+    color: var(--kfc-red) !important;
+}
+
+.navbar-kfc .nav-link {
+    font-weight: 500;
+    color: #222 !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-kfc .nav-link:hover, .navbar-kfc .nav-link.active {
+    color: var(--kfc-red) !important;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    background-color: var(--kfc-white);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+}
+
+.sidebar .nav-link {
+    color: var(--kfc-dark-text);
+    font-weight: 500;
+    border-radius: 10px;
+    margin: 4px 12px;
+    padding: 10px 16px;
+    transition: all 0.25s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: rgba(200, 16, 46, 0.08);
+    color: var(--kfc-red);
+}
+
+.sidebar .nav-link i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.sidebar-heading {
+    color: var(--kfc-dark-red) !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* BOTONES */
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--kfc-red), var(--kfc-dark-red));
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 30px;
+    box-shadow: 0 6px 14px rgba(200, 16, 46, 0.25);
+    transition: all 0.25s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(200, 16, 46, 0.35);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--kfc-red);
+    color: var(--kfc-red);
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 10px 22px;
+    transition: all 0.25s ease;
+}
+
+.btn-outline-primary:hover {
+    background: var(--kfc-red);
+    color: white;
+}
+
+/* MODERN APPLE-STYLE CARDS */
+
+.apple-card {
+    background: #ffffff;
+    border-radius: var(--border-radius-apple);
+    box-shadow: var(--shadow-apple);
+    border: 1px solid rgba(0,0,0,0.02);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 1.5rem;
+}
+
+.apple-card:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.apple-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    background-color: rgba(200, 16, 46, 0.05);
+}
+
+.apple-icon-container i {
+    font-size: 1.75rem;
+    color: var(--kfc-red);
+}
+
+.card {
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card img {
+    border-radius: 14px;
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.card-price {
+    font-weight: 800;
+    color: var(--kfc-red);
+    font-size: 1.1rem;
+}
+
+.card-header {
+    background-color: var(--kfc-white);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    border-radius: 18px 18px 0 0 !important;
+    font-weight: 700;
+    padding: 1rem 1.25rem;
+}
+
+/* MENU GRID SYSTEM */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+.menu-filter {
+    background: #f8f8f8;
+    padding: 12px 20px;
+    border-radius: 30px;
+    display: inline-flex;
+    gap: 10px;
+}
+
+.menu-section {
+    background: #f7f7f7;
+    padding: 30px;
+    border-radius: 25px;
+}
+
+/* FORMULARIOS */
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--kfc-red);
+    box-shadow: 0 0 0 0.25rem rgba(200, 16, 46, 0.25);
+}
+
+/* TABLAS */
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--kfc-dark-text);
+    border-top: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(200, 16, 46, 0.04);
+}
+
+/* BADGES */
+
+.badge.bg-primary {
+    background-color: var(--kfc-red) !important;
+}
+
+/* UTILIDADES */
+
+.text-primary {
+    color: var(--kfc-red) !important;
+}
+
+h1,
+h2,
+h3 {
+    font-weight: 700;
+}
+
+.container,
+.container-fluid {
+    padding-top: 20px;
+}
+
+.section-title {
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+/* HERO */
+
+.hero-section {
+    background: linear-gradient(135deg, var(--kfc-red), var(--kfc-dark-red));
+    color: var(--kfc-white);
+    padding: 4rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(200, 16, 46, 0.3);
+}
+
+.hero-title {
+    font-weight: 800;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-weight: 400;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+/* ANIMACIONES */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.card,
+.btn {
+    transition: all 0.25s ease;
+}
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+/* FONDO */
+
+.login-wrapper {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f6f6f6;
+}
+
+/* TARJETA */
+
+.login-card {
+    width: 380px;
+    background: white;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* TITULO */
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h2 {
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+.login-header p {
+    color: #777;
+    font-size: 14px;
+}
+
+/* INPUTS */
+
+.input-group-modern {
+    margin-bottom: 22px;
+}
+
+.input-group-modern label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input-group-modern input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.input-group-modern input:focus {
+    border-color: #e4002b;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(228, 0, 43, 0.1);
+}
+
+/* BOTON */
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #e4002b;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.btn-login:hover {
+    background: #c20024;
+}
+
+/* ERROR */
+
+.login-error {
+    background: #ffe5e5;
+    color: #b00020;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* FOOTER */
+
+.login-footer {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.login-footer p {
+    font-size: 13px;
+    color: #777;
+}
+
+.login-footer a {
+    color: #e4002b;
+    font-weight: 700;
+    text-decoration: none;
+}

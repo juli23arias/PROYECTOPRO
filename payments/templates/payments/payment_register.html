@@ -1,0 +1,255 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Caja y Pagos - Resto K-Univ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-cash-coin text-danger me-2"></i> Caja y Pagos</h1>
+</div>
+
+<div class="row fade-in">
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm border-0 border-top border-danger border-4 h-100" style="border-radius: var(--border-radius);">
+            <div class="card-header bg-white fw-bold py-3 fs-5 font-heading text-uppercase">
+                <i class="bi bi-receipt me-2 text-danger"></i> Registrar Nuevo Pago
+            </div>
+            <div class="card-body p-4 pt-3">
+                
+                {% if is_closed %}
+                <div class="alert alert-danger p-4 text-center rounded shadow-sm mb-4">
+                    <i class="bi bi-lock-fill display-4 d-block mb-3"></i>
+                    <h5 class="fw-bold">CAJA CERRADA</h5>
+                    <p class="mb-0">Ya se ha realizado el cierre de caja de hoy. No se permite registrar nuevos pagos hasta mañana.</p>
+                    <a href="{% url 'daily_cash' %}" class="btn btn-danger btn-sm mt-3 rounded-pill">Ver Resumen del Día</a>
+                </div>
+                {% endif %}
+
+                <!-- PASO 1: Búsqueda de Estudiante -->
+                <div class="mb-4" {% if is_closed %}style="opacity: 0.5; pointer-events: none;"{% endif %}>
+                    <form method="get" class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Código del Estudiante (Cédula)</label>
+                        <div class="input-group shadow-sm">
+                            <input type="text" name="q" class="form-control" placeholder="Ingresar cédula..." value="{{ search_query }}" {% if selected_student %}readonly{% endif %}>
+                            {% if selected_student %}
+                            <a href="{% url 'payment_register' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                            {% else %}
+                            <button class="btn btn-danger" type="submit">
+                                <i class="bi bi-search me-1"></i> Buscar
+                            </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+
+                {% if selected_student %}
+                <hr class="my-4 opacity-10">
+
+                <!-- PASO 2: Verificación de Datos -->
+                <div class="mb-4 p-3 bg-light rounded border border-warning border-opacity-25 animate__animated animate__fadeIn">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-3"><i class="bi bi-person-check me-1"></i> Confirmar Estudiante</h6>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-2 shadow-sm me-3">
+                            <i class="bi bi-person-circle fs-3 text-danger"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-5">{{ selected_student.get_full_name }}</div>
+                            <div class="small text-muted text-uppercase fw-bold">{{ selected_student.get_role_display }} | Cédula: {{ selected_student.cedula }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 3: Selección de Plan y Pago -->
+                <form method="post" action="{% url 'payment_register' %}" class="animate__animated animate__fadeIn" novalidate {% if is_closed %}style="opacity: 0.6; pointer-events: none;"{% endif %}>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger font-text small">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Campo oculto para el estudiante -->
+                    {{ form.student.as_hidden }}
+                    {% if form.student.errors %}<div class="alert alert-danger py-1 small">{{ form.student.errors.0 }}</div>{% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.plan.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Plan a Adquirir</label>
+                        {{ form.plan }}
+                        {% if form.plan.errors %}<div class="text-danger small mt-1">{{ form.plan.errors.0 }}</div>{% endif %}
+                        
+                        <!-- Info del Plan Automática -->
+                        <div id="plan-info" class="mt-2 p-2 bg-white border rounded shadow-sm small" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted"><i class="bi bi-clock"></i> Duración: <b id="plan-duration"></b> días</span>
+                                <span class="text-danger fw-bold fs-6"><i class="bi bi-tag"></i> Precio: $<span id="plan-price"></span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.amount.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Monto a Cobrar ($)</label>
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-light text-muted fw-bold">$</span>
+                            {{ form.amount }}
+                        </div>
+                        <div class="form-text mt-1">Este monto se bloquea según el plan seleccionado.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.payment_method.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Método de Pago</label>
+                        {{ form.payment_method }}
+                        {% if form.payment_method.errors %}<div class="text-danger small mt-1">{{ form.payment_method.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-2">
+                            <label for="{{ form.start_date.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Fecha de Inicio</label>
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}<div class="text-danger small mt-1">{{ form.start_date.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label fw-bold small text-uppercase text-muted">Fecha de Fin (Auto)</label>
+                            <input type="text" id="end-date-display" class="form-control bg-light" readonly placeholder="--/--/----">
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg shadow-sm rounded-pill font-text fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Registrar Pago
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-search display-1 text-light"></i>
+                    <p class="text-muted mt-3">Ingresar cédula para iniciar el proceso de cobro.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagos Recientes -->
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-sm border-0 h-100" style="border-radius: var(--border-radius);">
+            <div class="card-header bg-white fw-bold py-3 fs-5 d-flex justify-content-between align-items-center font-heading text-uppercase">
+                <span><i class="bi bi-clock-history me-2 text-muted"></i> Transacciones Recientes</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Código</th>
+                                <th>Estudiante</th>
+                                <th>Plan</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                            <tr>
+                                <td class="ps-4 small fw-bold text-muted">{{ payment.student.cedula|default:"---" }}</td>
+                                <td class="fw-bold"><i class="bi bi-person me-1 opacity-50"></i> {{ payment.student.get_full_name }}</td>
+                                <td>
+                                    {% if payment.plan %}
+                                        <span class="badge bg-warning text-dark border border-warning rounded-pill">{{ payment.plan.name }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill">Otros</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="fw-bold text-success">${{ payment.amount|floatformat:0 }}</span></td>
+                                <td class="text-capitalize small"><i class="bi bi-credit-card me-1"></i> {{ payment.payment_method }}</td>
+                                <td class="text-muted small">{{ payment.date|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-receipt display-4 d-block mb-3 opacity-50"></i>
+                                    No hay transacciones registradas recientemente.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const plansData = {{ plans_json|safe }};
+        const planSelect = document.getElementById('{{ form.plan.id_for_label }}');
+        const amountInput = document.getElementById('{{ form.amount.id_for_label }}');
+        const startDateInput = document.getElementById('{{ form.start_date.id_for_label }}');
+        const endDateDisplay = document.getElementById('end-date-display');
+        
+        const planInfo = document.getElementById('plan-info');
+        const planPriceText = document.getElementById('plan-price');
+        const planDurationText = document.getElementById('plan-duration');
+
+        function formatDate(date) {
+            const d = date.getDate().toString().padStart(2, '0');
+            const m = (date.getMonth() + 1).toString().padStart(2, '0');
+            const y = date.getFullYear();
+            return `${d}/${m}/${y}`;
+        }
+
+        function calculateEndDate() {
+            const planId = planSelect.value;
+            const startDateStr = startDateInput.value;
+            
+            if (planId && plansData[planId] && startDateStr) {
+                const plan = plansData[planId];
+                const duration = parseInt(plan.duration);
+                let startDate = new Date(startDateStr + 'T00:00:00'); 
+                
+                // Si el inicio es fin de semana, saltar al lunes (1)
+                while (startDate.getDay() === 0 || startDate.getDay() === 6) {
+                    startDate.setDate(startDate.getDate() + 1);
+                }
+
+                let endDate = new Date(startDate);
+                let daysCounted = 1;
+                
+                while (daysCounted < duration) {
+                    endDate.setDate(endDate.getDate() + 1);
+                    // 0: Domingo, 6: Sábado
+                    if (endDate.getDay() !== 0 && endDate.getDay() !== 6) {
+                        daysCounted++;
+                    }
+                }
+                
+                endDateDisplay.value = formatDate(endDate);
+                
+                // Update amount and info
+                amountInput.value = plan.price;
+                planPriceText.textContent = plan.price;
+                planDurationText.textContent = plan.duration;
+                planInfo.style.display = 'block';
+            } else {
+                endDateDisplay.value = '--/--/----';
+                planInfo.style.display = 'none';
+            }
+        }
+
+        if (planSelect) {
+            planSelect.addEventListener('change', calculateEndDate);
+            startDateInput.addEventListener('change', calculateEndDate);
+            
+            // Inicializar si ya hay valores
+            if (planSelect.value) {
+                calculateEndDate();
+            }
+        }
+    });
+</script>
+{% endblock %}

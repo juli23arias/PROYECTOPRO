@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Resto K-Univ{% endblock %}
+
+{% block content %}
+<!-- Full Width Hero Landing -->
+</div> <!-- Cierra el container fluifo de base -->
+<div class="hero-landing mt-n4"> <!-- mt-n4 para pegarlo al nav compensando el padding -->
+    <div class="container hero-landing-content">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-center text-lg-start pe-lg-5 mb-5 mb-lg-0">
+                <h1 class="hero-title fade-in" style="animation-delay: 0.1s;">Restaurante Universitario</h1>
+                <p class="hero-subtitle fade-in" style="animation-delay: 0.3s;">
+                    El Sabor, energía y rapidez que necesitas en tu día a día universitario. Administra tu plan alimenticio, descubre las recetas y registra tus asistencias en un mismo lugar.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3 fade-in" style="animation-delay: 0.5s;">
+                    <a href="{% url 'menu_view' %}" class="btn btn-outline-light btn-lg px-4 fs-5 text-uppercase fw-bold rounded-pill shadow-sm">
+                        <i class="bi bi-book-half me-2"></i> Ver Menú Semanal
+                    </a>
+                    <a href="{% url 'register' %}" class="btn bg-white text-danger btn-lg px-4 fs-5 text-uppercase fw-bold rounded-pill shadow-sm hover-shadow">
+                        <i class="bi bi-person-plus-fill me-2"></i> Registrarse Ahora
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 fade-in" style="animation-delay: 0.7s;">
+                <!-- Componente visual derecho (decorativo) -->
+                <div class="position-relative">
+                    <div class="bg-white rounded-circle position-absolute top-50 start-50 translate-middle" style="width: 320px; height: 320px; opacity: 0.1;"></div>
+                    <div class="bg-white rounded-circle position-absolute top-50 start-50 translate-middle" style="width: 250px; height: 250px; opacity: 0.15;"></div>
+                    <i class="bi bi-shop position-relative display-1 text-white opacity-75 d-block text-center" style="font-size: 10rem !important;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 my-4">
+    <!-- Sección de Información Rapida -->
+    <div class="row text-center g-4 fade-in">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm pt-4 hover-shadow" style="border-radius: var(--border-radius);">
+                <div class="card-body">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-calendar2-week-fill display-5"></i>
+                    </div>
+                    <h3 class="h4 fw-bold">Planes de Alimentación</h3>
+                    <p class="text-muted">Adquiere tu paquete mensual para ahorrar o paga cada visita en caja. Tenemos la mejor opción para ti.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 bg-danger text-white shadow pt-4 hover-shadow" style="border-radius: var(--border-radius); transform: translateY(-10px);">
+                <div class="card-body">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white text-danger mb-3 shadow-sm" style="width: 80px; height: 80px;">
+                        <i class="bi bi-cup-hot-fill display-5"></i>
+                    </div>
+                    <h3 class="h4 fw-bold">Menú Destacado</h3>
+                    <p class="text-white-50">Nuestro chef prepara recetas caseras y nutritivas diariamente pensando en el rendimiento estudiantil.</p>
+                    <a href="{% url 'menu_view' %}" class="btn btn-outline-light rounded-pill mt-2 fw-bold">Explorar Menú</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm pt-4 hover-shadow" style="border-radius: var(--border-radius);">
+                <div class="card-body">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-cash-stack display-5"></i>
+                    </div>
+                    <h3 class="h4 fw-bold">Gestión Transparente</h3>
+                    <p class="text-muted">Revisa tu historial de asistencias y controla tus pagos en tiempo real desde el panel de estudiante.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Volver a abrir para el pie de página futuro -->
+<div class="container-fluid">
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ title }} - Restaurante Universitario{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'plan_list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la Lista
+        </a>
+    </div>
+</div>
+
+<div class="row fade-in">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow-sm border-0 border-top border-success border-4" style="border-radius: var(--border-radius);">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold font-heading text-uppercase small text-muted text-center"><i class="bi bi-person-check-fill me-2 text-success"></i> {{ title }}</h5>
+            </div>
+            <div class="card-body p-4 pt-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger border-0 shadow-sm rounded-3 py-3 small mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> 
+                        <strong>Error:</strong> Por favor verifica los datos ingresados.
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.student.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Estudiante</label>
+                        {{ form.student }}
+                        {% if form.student.errors %}<div class="text-danger small">{{ form.student.errors.0 }}</div>{% endif %}
+                        <div class="form-text mt-1">Busca el estudiante por su nombre o usuario.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.plan.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Seleccionar Plan</label>
+                        {{ form.plan }}
+                        {% if form.plan.errors %}<div class="text-danger small">{{ form.plan.errors.0 }}</div>{% endif %}
+                        <div class="form-text mt-1">Solo se muestran los planes activos configurados por el Admin.</div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-12 mb-4">
+                            <label for="{{ form.start_date.id_for_label }}" class="form-label fw-bold small text-uppercase text-muted">Fecha de Inicio</label>
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-0 shadow-sm rounded-3 py-3 small mb-4">
+                        <i class="bi bi-info-circle-fill me-2"></i> 
+                        <strong>Nota:</strong> La fecha de vencimiento se calculará automáticamente según la duración del plan seleccionado.
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg shadow-sm rounded-pill py-3 fw-bold">
+                            <i class="bi bi-check-circle-fill me-2"></i> CONFIRMAR ASIGNACIÓN
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

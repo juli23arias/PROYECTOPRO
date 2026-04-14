@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MVP Restaurante Universitario{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-kfc">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard' %}"><i class="bi bi-shop"></i> Restaurante Universitario</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link text-white"><i class="bi bi-person-circle"></i> {{ user.get_full_name }} ({{ user.get_role_display }})</span>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link nav-link text-white"><i class="bi bi-box-arrow-right"></i> Salir</button>
+                        </form>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            {% if user.is_authenticated %}
+            <!-- Menú Lateral -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar py-3 collapse">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                                <i class="bi bi-house-door"></i> Dashboard
+                            </a>
+                        </li>
+                        
+                        <!-- Accesos según rol -->
+                        {% if user.is_student %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'menu_view' %}"><i class="bi bi-calendar-week"></i> Menú Semanal</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'attendance_history' %}"><i class="bi bi-check2-square"></i> Mis Asistencias</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'payment_history' %}"><i class="bi bi-wallet2"></i> Mis Pagos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_plan' %}"><i class="bi bi-card-checklist"></i> Mi Plan</a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.is_chef or user.is_admin_role %}
+                        <li class="nav-item mt-3">
+                            <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted text-uppercase">Cocina</h6>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'recipe_list' %}"><i class="bi bi-journal-text"></i> Recetas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'menu_weekly' %}"><i class="bi bi-calendar-plus"></i> Gestionar Menú</a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.is_receptionist or user.is_admin_role %}
+                        <li class="nav-item mt-3">
+                            <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted text-uppercase">Recepción</h6>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'attendance_register' %}"><i class="bi bi-person-check"></i> Registro Diario</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'attendance_all' %}"><i class="bi bi-clock-history"></i> Historial Completo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'payment_register' %}"><i class="bi bi-cash-coin"></i> Registrar Pago</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'daily_cash' %}"><i class="bi bi-calculator"></i> Caja del Día</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'cash_history' %}"><i class="bi bi-archive-fill"></i> Historial de Cierres</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'payment_all' %}"><i class="bi bi-journal-check"></i> Todos los Pagos</a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.is_admin_role %}
+                        <li class="nav-item mt-3">
+                            <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted text-uppercase">Administración</h6>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_list' %}"><i class="bi bi-person-gear"></i> Gestión de Usuarios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'plan_list' %}"><i class="bi bi-tags"></i> Planes de Alimentación</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'admin_reports_dashboard' %}active{% endif %}" href="{% url 'admin_reports_dashboard' %}"><i class="bi bi-graph-up"></i> Dashboard de Reportes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'general_reports' %}active{% endif %}" href="{% url 'general_reports' %}"><i class="bi bi-file-earmark-bar-graph"></i> Reportes Generales</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Panel Admin</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Contenido Principal -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            {% else %}
+            <!-- Contenido sin Menú Lateral (Login) -->
+            <main class="col-12 px-md-4 py-4">
+            {% endif %}
+            
+                <!-- Mensajes -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

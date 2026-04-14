@@ -1,0 +1,501 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard Ejecutivo - Restaurante Universitario{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    .filter-btn-group .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .apple-card-chart {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    .apple-card-chart:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .chart-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #1d1d1f;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-pie-chart-fill text-danger me-2"></i> Panel Ejecutivo</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <span class="badge bg-white text-danger border border-danger fs-6 py-2 px-4 rounded-pill shadow-sm d-flex align-items-center font-text">
+            <i class="bi bi-calendar3 me-2"></i> {{ today|date:"l, d M Y" }}
+        </span>
+    </div>
+</div>
+
+<!-- Tarjetas de Resumen (Mantener funcionalidad existente) -->
+<div class="row g-4 mb-4 fade-in">
+    <div class="col-md-3">
+        <div class="apple-card text-center p-3">
+            <h3 class="fw-bold fs-2 font-heading text-dark mb-0">{{ total_students }}</h3>
+            <p class="text-muted small text-uppercase mb-0">Estudiantes</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="apple-card text-center p-3">
+            <h3 class="fw-bold fs-2 font-heading text-success mb-0">${{ todays_payments_sum|floatformat:0 }}</h3>
+            <p class="text-muted small text-uppercase mb-0">Ventas Hoy</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="apple-card text-center p-3">
+            <h3 class="fw-bold fs-2 font-heading text-danger mb-0">{{ todays_attendances }}</h3>
+            <p class="text-muted small text-uppercase mb-0">Asistencias Hoy</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="apple-card text-center p-3">
+            <h3 class="fw-bold fs-2 font-heading text-warning mb-0">{{ active_plans_count }}</h3>
+            <p class="text-muted small text-uppercase mb-0">Planes Activos</p>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficas Principales -->
+<div class="row g-4 mb-4 fade-in">
+    <!-- 1. Ingresos por Día -->
+    <div class="col-md-8">
+        <div class="apple-card-chart">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title"><i class="bi bi-graph-up-arrow me-2 text-primary"></i> Ingresos por Tiempo</h5>
+                    <div id="custom-range-income" class="mt-2 d-none">
+                        <input type="date" class="form-control form-control-sm d-inline-block w-auto" id="income-start">
+                        <input type="date" class="form-control form-control-sm d-inline-block w-auto" id="income-end">
+                        <button class="btn btn-sm btn-primary apply-custom" data-chart="income">OK</button>
+                    </div>
+                </div>
+                <div class="btn-group filter-btn-group" role="group" data-chart="income">
+                    <button type="button" class="btn btn-outline-secondary" data-range="today">Hoy</button>
+                    <button type="button" class="btn btn-outline-secondary active" data-range="week">7 Días</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="month">Mes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="year">Año</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="custom">Rango</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="incomeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Planes Más Vendidos -->
+    <div class="col-md-4">
+        <div class="apple-card-chart">
+            <div class="chart-header">
+                <h5 class="chart-title"><i class="bi bi-pie-chart me-2 text-warning"></i> Planes Favoritos</h5>
+                <div class="btn-group filter-btn-group" role="group" data-chart="plans">
+                    <button type="button" class="btn btn-outline-secondary active" data-range="month">Mes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="year">Año</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="plansChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5 fade-in">
+    <!-- 3. Métodos de Pago -->
+    <div class="col-md-4">
+        <div class="apple-card-chart">
+            <div class="chart-header">
+                <h5 class="chart-title"><i class="bi bi-credit-card me-2 text-info"></i> Métodos de Pago</h5>
+                <div class="btn-group filter-btn-group" role="group" data-chart="methods">
+                    <button type="button" class="btn btn-outline-secondary" data-range="today">Hoy</button>
+                    <button type="button" class="btn btn-outline-secondary active" data-range="week">Semana</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="methodsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Asistencias por Día -->
+    <div class="col-md-8">
+        <div class="apple-card-chart">
+            <div class="chart-header">
+                <h5 class="chart-title"><i class="bi bi-people me-2 text-danger"></i> Flujo de Asistencia</h5>
+                <div class="btn-group filter-btn-group" role="group" data-chart="attendance">
+                    <button type="button" class="btn btn-outline-secondary active" data-range="week">Semana</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="month">Mes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="year">Año</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5 fade-in">
+    <!-- 5. Usuarios del Sistema -->
+    <div class="col-md-6">
+        <div class="apple-card-chart">
+            <div class="chart-header">
+                <h5 class="chart-title"><i class="bi bi-person-badge me-2 text-secondary"></i> Usuarios por Rol</h5>
+                <div class="btn-group filter-btn-group" role="group" data-chart="users">
+                    <button type="button" class="btn btn-outline-secondary active" data-range="total">Total</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="month">Este Mes</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="usersChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Planes Activos (Doughnut) -->
+    <div class="col-md-6">
+        <div class="apple-card-chart">
+            <div class="chart-header">
+                <h5 class="chart-title"><i class="bi bi-check-all me-2 text-success"></i> Planes Activos</h5>
+                <div class="btn-group filter-btn-group" role="group" data-chart="active_plans">
+                    <button type="button" class="btn btn-outline-secondary active" data-range="today">Hoy</button>
+                    <button type="button" class="btn btn-outline-secondary" data-range="month">Mes</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="activePlansChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Centro de Control (Accesos Rápidos) -->
+<div class="row fade-in mb-5">
+    <div class="col-12">
+        <div class="apple-card p-4">
+            <h5 class="fw-bold mb-4 text-uppercase small text-muted"><i class="bi bi-lightning-charge-fill text-warning me-2"></i> Gestión Rápida</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-dark w-100 py-3 rounded-4"><i class="bi bi-gear-fill me-2"></i> Base de Datos</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'plan_list' %}" class="btn btn-outline-danger w-100 py-3 rounded-4"><i class="bi bi-tags-fill me-2"></i> Gestionar Planes</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'menu_weekly' %}" class="btn btn-outline-danger w-100 py-3 rounded-4"><i class="bi bi-egg-fried me-2"></i> Ver Menús</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'general_reports' %}" class="btn btn-outline-danger w-100 py-3 rounded-4"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Reportes Generales</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'payment_register' %}" class="btn btn-danger w-100 py-3 rounded-4 shadow-sm"><i class="bi bi-cash-coin me-2"></i> Ir a Caja</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Drill-Down -->
+<div class="modal fade" id="drilldownModal" tabindex="-1" aria-labelledby="drilldownModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold font-heading" id="drilldownModalLabel">Detalle de Registros</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="drilldownTable">
+                        <thead class="table-light">
+                            <tr id="tableHeaders">
+                                <!-- Headers dinámicos -->
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noDataMessage" class="text-center py-4 d-none">
+                    <i class="bi bi-info-circle fs-1 text-muted d-block mb-2"></i>
+                    <p class="text-muted">No se encontraron registros para esta selección.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const drilldownModal = new bootstrap.Modal(document.getElementById('drilldownModal'));
+        const tableHeaders = document.getElementById('tableHeaders');
+        const tableBody = document.getElementById('tableBody');
+        const noDataMessage = document.getElementById('noDataMessage');
+        const modalTitle = document.getElementById('drilldownModalLabel');
+
+        const chartConfigs = {
+            income: { id: 'incomeChart', type: 'line', color: '#007aff' },
+            plans: { id: 'plansChart', type: 'pie', colors: ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#5856d6'] },
+            methods: { id: 'methodsChart', type: 'doughnut', colors: ['#34c759', '#007aff', '#ff9500'] },
+            attendance: { id: 'attendanceChart', type: 'bar', color: '#ff3b30' },
+            users: { id: 'usersChart', type: 'bar', color: '#8e8e93' },
+            active_plans: { id: 'activePlansChart', type: 'doughnut', colors: ['#34c759', '#5856d6', '#007aff'] }
+        };
+
+        const charts = {};
+        let currentRanges = {
+            income: 'week',
+            plans: 'month',
+            methods: 'week',
+            attendance: 'week',
+            users: 'total',
+            active_plans: 'today'
+        };
+
+        function showDrilldown(type, key) {
+            const range = currentRanges[type];
+            fetch(`{% url 'drilldown_data' %}?type=${type}&key=${key}&range=${range}`)
+                .then(response => response.json())
+                .then(data => {
+                    modalTitle.innerText = data.title;
+                    tableHeaders.innerHTML = '';
+                    tableBody.innerHTML = '';
+                    
+                    data.headers.forEach(h => {
+                        const th = document.createElement('th');
+                        th.innerText = h;
+                        th.className = 'text-uppercase small tracking-wider fw-bold';
+                        tableHeaders.appendChild(th);
+                    });
+
+                    if (data.results.length > 0) {
+                        noDataMessage.classList.add('d-none');
+                        document.getElementById('drilldownTable').classList.remove('d-none');
+                        data.results.forEach(row => {
+                            const tr = document.createElement('tr');
+                            Object.values(row).forEach(val => {
+                                const td = document.createElement('td');
+                                td.innerText = val;
+                                td.className = 'py-3';
+                                tr.appendChild(td);
+                            });
+                            tableBody.appendChild(tr);
+                        });
+                    } else {
+                        noDataMessage.classList.remove('d-none');
+                        document.getElementById('drilldownTable').classList.add('d-none');
+                    }
+                    drilldownModal.show();
+                });
+        }
+
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (e, activeEls, chart) => {
+                if (activeEls.length > 0) {
+                    const idx = activeEls[0].index;
+                    const label = chart.data.labels[idx];
+                    const type = Object.keys(charts).find(key => charts[key] === chart);
+                    showDrilldown(type, label);
+                }
+            },
+            onHover: (event, chartElement) => {
+                event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+            }
+        };
+
+        function initCharts(data) {
+            // 1. Ingresos
+            charts.income = new Chart(document.getElementById('incomeChart'), {
+                type: 'line',
+                data: {
+                    labels: data.income.labels,
+                    datasets: [{
+                        label: 'Ingresos ($)',
+                        data: data.income.values,
+                        borderColor: '#007aff',
+                        backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#007aff'
+                    }]
+                },
+                options: { ...commonOptions, plugins: { legend: { display: false } } }
+            });
+
+            // 2. Planes más vendidos
+            charts.plans = new Chart(document.getElementById('plansChart'), {
+                type: 'pie',
+                data: {
+                    labels: data.plans.labels,
+                    datasets: [{
+                        data: data.plans.values,
+                        backgroundColor: chartConfigs.plans.colors
+                    }]
+                },
+                options: commonOptions
+            });
+
+            // 3. Métodos
+            charts.methods = new Chart(document.getElementById('methodsChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.methods.labels,
+                    datasets: [{
+                        data: data.methods.values,
+                        backgroundColor: chartConfigs.methods.colors
+                    }]
+                },
+                options: { ...commonOptions, cutout: '70%' }
+            });
+
+            // 4. Asistencia
+            charts.attendance = new Chart(document.getElementById('attendanceChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.attendance.labels,
+                    datasets: [{
+                        label: 'Estudiantes',
+                        data: data.attendance.values,
+                        backgroundColor: '#ff3b30',
+                        borderRadius: 8
+                    }]
+                },
+                options: { ...commonOptions, plugins: { legend: { display: false } } }
+            });
+
+            // 5. Usuarios
+            charts.users = new Chart(document.getElementById('usersChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.users.labels,
+                    datasets: [{
+                        data: data.users.values,
+                        backgroundColor: '#8e8e93',
+                        borderRadius: 8
+                    }]
+                },
+                options: { 
+                    ...commonOptions,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } } 
+                }
+            });
+
+            // 6. Planes Activos
+            charts.active_plans = new Chart(document.getElementById('activePlansChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.active_plans.labels,
+                    datasets: [{
+                        data: data.active_plans.values,
+                        backgroundColor: chartConfigs.active_plans.colors
+                    }]
+                },
+                options: { ...commonOptions, cutout: '70%' }
+            });
+        }
+
+        function updateChart(chartKey, range, start = '', end = '') {
+            currentRanges[chartKey] = range;
+            let url = `?format=json&range=${range}`;
+            if (range === 'custom' && start && end) {
+                url += `&start=${start}&end=${end}`;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = data[chartKey];
+                    if (chartData && charts[chartKey]) {
+                        charts[chartKey].data.labels = chartData.labels;
+                        charts[chartKey].data.datasets[0].data = chartData.values;
+                        charts[chartKey].update();
+                    }
+                });
+        }
+
+        // Carga inicial
+        fetch('?format=json&range=week')
+            .then(response => response.json())
+            .then(data => {
+                initCharts(data);
+            });
+
+        // Manejo de Filtros (Sin cambios, solo actualizan currentRanges)
+        document.querySelectorAll('.filter-btn-group .btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const group = this.parentElement;
+                const chartKey = group.dataset.chart;
+                const range = this.dataset.range;
+                const customDiv = document.getElementById(`custom-range-${chartKey}`);
+                
+                if (range === 'custom') {
+                    if (customDiv) customDiv.classList.remove('d-none');
+                    return;
+                } else {
+                    if (customDiv) customDiv.classList.add('d-none');
+                }
+
+                group.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                updateChart(chartKey, range);
+            });
+        });
+
+        document.querySelectorAll('.apply-custom').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const chartKey = this.dataset.chart;
+                const start = document.getElementById(`${chartKey}-start`).value;
+                const end = document.getElementById(`${chartKey}-end`).value;
+
+                if (start && end) {
+                    updateChart(chartKey, 'custom', start, end);
+                    const group = document.querySelector(`.filter-btn-group[data-chart="${chartKey}"]`);
+                    group.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                    group.querySelector('[data-range="custom"]').classList.add('active');
+                } else {
+                    alert('Por favor selecciona ambas fechas.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

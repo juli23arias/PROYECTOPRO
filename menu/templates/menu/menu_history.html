@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Historial de Menús - K-Univ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom fade-in">
+    <div>
+        <h1 class="h2 fw-bold font-heading text-uppercase tracking-wider"><i class="bi bi-archive text-muted me-2"></i> Historial de Menús</h1>
+        <p class="text-muted small mb-0">Listado de todas las planificaciones archivadas</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'menu_weekly' %}" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold">
+            <i class="bi bi-calendar3 me-1"></i> Volver al Planner
+        </a>
+    </div>
+</div>
+
+<div class="apple-card fade-in">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Semana / Año</th>
+                    <th>Estado de Carga</th>
+                    <th>Referencia</th>
+                    <th class="text-center">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="fw-bold text-dark">Semana {{ item.week }}</div>
+                        <div class="text-muted small">Año {{ item.year }}</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-opacity-10 rounded-pill px-3 border {% if item.count >= 5 %}bg-success text-success border-success{% else %}bg-warning text-dark border-warning{% endif %}">
+                            {{ item.count }} / 5 Días
+                        </span>
+                    </td>
+                    <td>
+                        <div class="text-muted small italic">Ejemplo: {{ item.sample_recipe }}</div>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'menu_weekly' %}?year={{ item.year }}&week={{ item.week }}" class="btn btn-sm btn-outline-danger rounded-pill px-4 fw-bold">
+                            <i class="bi bi-eye"></i> Ver Plan
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">No hay registros de menús antiguos en el sistema.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

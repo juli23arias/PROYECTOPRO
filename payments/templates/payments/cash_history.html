@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Historial de Cierres - Restaurante Universitario{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Historial de Cierres de Caja</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'daily_cash' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-calculator"></i> Volver a Caja del Día
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 fade-in" style="border-radius: var(--border-radius);">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Fecha de Cierre</th>
+                        <th class="text-center">Pagos</th>
+                        <th>Efectivo</th>
+                        <th>Transferencia</th>
+                        <th>Tarjeta</th>
+                        <th class="fw-bold">Total General</th>
+                        <th>Cerrado por</th>
+                        <th class="pe-4">Fecha/Hora Registro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for close in history %}
+                    <tr>
+                        <td class="ps-4">
+                            <span class="fw-bold text-primary">{{ close.date|date:"d/m/Y" }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary rounded-pill">{{ close.total_payments }}</span>
+                        </td>
+                        <td>${{ close.total_cash|floatformat:2 }}</td>
+                        <td>${{ close.total_transfer|floatformat:2 }}</td>
+                        <td>${{ close.total_card|floatformat:2 }}</td>
+                        <td>
+                            <span class="fw-bold text-danger">${{ close.grand_total|floatformat:2 }}</span>
+                        </td>
+                        <td>
+                            <div class="small">{{ close.closed_by.get_full_name }}</div>
+                        </td>
+                        <td class="pe-4 text-muted small">
+                            {{ close.closed_at|date:"d/m/Y H:i" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-archive fs-2 d-block mb-2"></i>
+                            Aún no hay cierres registrados en el historial.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
